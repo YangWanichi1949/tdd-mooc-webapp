@@ -5,5 +5,22 @@
   </head>
   <body>
     <h1>Todo App</h1>
+
+    <input id="todo-input" />
+    <button id="add-button">Add</button>
+
+    <ul id="todo-list"></ul>
+
+    <script>
+      const input = document.getElementById('todo-input');
+      const button = document.getElementById('add-button');
+      const list = document.getElementById('todo-list');
+
+      button.addEventListener('click', () => {
+        const li = document.createElement('li');
+        li.textContent = input.value;
+        list.appendChild(li);
+      });
+    </script>
   </body>
 </html>
