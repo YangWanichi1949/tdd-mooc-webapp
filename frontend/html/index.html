@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <title>Todo App</title>
+    <style>
+      .completed {
+        text-decoration: line-through;
+      }
+    </style>
   </head>
 
   <body>
@@ -20,7 +25,6 @@
 
       async function loadTodos() {
         const response = await fetch('http://localhost:8081/api/todos');
-
         return await response.json();
       }
 
@@ -31,7 +35,34 @@
 
         for (const todo of todos) {
           const li = document.createElement('li');
-          li.textContent = todo.text;
+
+          if (todo.completed) {
+            li.classList.add('completed');
+          }
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = todo.completed;
+
+          checkbox.addEventListener('change', async () => {
+            await fetch(`http://localhost:8081/api/todos/${todo.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                completed: checkbox.checked,
+              }),
+            });
+
+            await renderTodos();
+          });
+
+          const text = document.createElement('span');
+          text.textContent = todo.text;
+
+          li.appendChild(checkbox);
+          li.appendChild(text);
           list.appendChild(li);
         }
       }

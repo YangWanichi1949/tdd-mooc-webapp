@@ -15,27 +15,34 @@ async function initializeDatabase() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS todos (
       id SERIAL PRIMARY KEY,
-      text TEXT NOT NULL
+      text TEXT NOT NULL,
+      completed BOOLEAN NOT NULL DEFAULT FALSE
     )
+  `);
+
+  await pool.query(`
+    ALTER TABLE todos
+    ADD COLUMN IF NOT EXISTS completed BOOLEAN NOT NULL DEFAULT FALSE
   `);
 }
 
 app.get('/api/todos', async (req, res) => {
   const result = await pool.query(
-    'SELECT id, text FROM todos ORDER BY id'
+    'SELECT id, text, completed FROM todos ORDER BY id'
   );
 
   res.json(
     result.rows.map((todo) => ({
       id: String(todo.id),
       text: todo.text,
+      completed: todo.completed,
     }))
   );
 });
 
 app.post('/api/todos', async (req, res) => {
   const result = await pool.query(
-    'INSERT INTO todos (text) VALUES ($1) RETURNING id, text',
+    'INSERT INTO todos (text) VALUES ($1) RETURNING id, text, completed',
     [req.body.text]
   );
 
@@ -44,6 +51,22 @@ app.post('/api/todos', async (req, res) => {
   res.status(201).json({
     id: String(todo.id),
     text: todo.text,
+    completed: todo.completed,
+  });
+});
+
+app.put('/api/todos/:id', async (req, res) => {
+  const result = await pool.query(
+    'UPDATE todos SET completed = $1 WHERE id = $2 RETURNING id, text, completed',
+    [req.body.completed, req.params.id]
+  );
+
+  const todo = result.rows[0];
+
+  res.json({
+    id: String(todo.id),
+    text: todo.text,
+    completed: todo.completed,
   });
 });
 
