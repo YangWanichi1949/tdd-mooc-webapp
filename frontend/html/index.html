@@ -18,34 +18,38 @@
       const button = document.getElementById('add-button');
       const list = document.getElementById('todo-list');
 
-      function loadTodos() {
-        return JSON.parse(localStorage.getItem('todos') || '[]');
+      async function loadTodos() {
+        const response = await fetch('http://localhost:8081/api/todos');
+
+        return await response.json();
       }
 
-      function saveTodos(todos) {
-        localStorage.setItem('todos', JSON.stringify(todos));
-      }
-
-      function renderTodos() {
+      async function renderTodos() {
         list.innerHTML = '';
 
-        for (const todo of loadTodos()) {
+        const todos = await loadTodos();
+
+        for (const todo of todos) {
           const li = document.createElement('li');
-          li.textContent = todo;
+          li.textContent = todo.text;
           list.appendChild(li);
         }
       }
 
-      button.addEventListener('click', () => {
-        const todos = loadTodos();
-
-        todos.push(input.value);
-
-        saveTodos(todos);
-
-        renderTodos();
+      button.addEventListener('click', async () => {
+        await fetch('http://localhost:8081/api/todos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: input.value,
+          }),
+        });
 
         input.value = '';
+
+        await renderTodos();
       });
 
       renderTodos();
