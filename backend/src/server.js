@@ -85,6 +85,12 @@ app.put('/api/todos/:id/text', async (req, res) => {
   });
 });
 
+app.delete('/api/todos/completed', async (req, res) => {
+  await pool.query('DELETE FROM todos WHERE completed = TRUE');
+
+  res.status(204).send();
+});
+
 async function startServer() {
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {

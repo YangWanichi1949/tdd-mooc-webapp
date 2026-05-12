@@ -15,12 +15,14 @@
 
     <input id="todo-input" />
     <button id="add-button">Add</button>
+    <button id="archive-button">Archive completed</button>
 
     <ul id="todo-list"></ul>
 
     <script>
       const input = document.getElementById('todo-input');
       const button = document.getElementById('add-button');
+      const archiveButton = document.getElementById('archive-button');
       const list = document.getElementById('todo-list');
 
       async function loadTodos() {
@@ -76,7 +78,7 @@
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                   body: JSON.stringify({
+                  body: JSON.stringify({
                     text: editInput.value,
                   }),
                 });
@@ -104,6 +106,14 @@
         });
 
         input.value = '';
+
+        await renderTodos();
+      });
+
+      archiveButton.addEventListener('click', async () => {
+        await fetch('http://localhost:8081/api/todos/completed', {
+          method: 'DELETE',
+        });
 
         await renderTodos();
       });
