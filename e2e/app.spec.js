@@ -8,4 +8,8 @@ test('can add a todo', async ({ page }) => {
   await page.click('#add-button');
 
   await expect(page.locator('text=Buy milk')).toBeVisible();
+
+  await page.reload();
+
+  await expect(page.locator('text=Buy milk')).toBeVisible();
 });

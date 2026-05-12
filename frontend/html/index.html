@@ -1,8 +1,10 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>Todo App</title>
   </head>
+
   <body>
     <h1>Todo App</h1>
 
@@ -16,11 +18,37 @@
       const button = document.getElementById('add-button');
       const list = document.getElementById('todo-list');
 
+      function loadTodos() {
+        return JSON.parse(localStorage.getItem('todos') || '[]');
+      }
+
+      function saveTodos(todos) {
+        localStorage.setItem('todos', JSON.stringify(todos));
+      }
+
+      function renderTodos() {
+        list.innerHTML = '';
+
+        for (const todo of loadTodos()) {
+          const li = document.createElement('li');
+          li.textContent = todo;
+          list.appendChild(li);
+        }
+      }
+
       button.addEventListener('click', () => {
-        const li = document.createElement('li');
-        li.textContent = input.value;
-        list.appendChild(li);
+        const todos = loadTodos();
+
+        todos.push(input.value);
+
+        saveTodos(todos);
+
+        renderTodos();
+
+        input.value = '';
       });
+
+      renderTodos();
     </script>
   </body>
 </html>
