@@ -70,6 +70,21 @@ app.put('/api/todos/:id', async (req, res) => {
   });
 });
 
+app.put('/api/todos/:id/text', async (req, res) => {
+  const result = await pool.query(
+    'UPDATE todos SET text = $1 WHERE id = $2 RETURNING id, text, completed',
+    [req.body.text, req.params.id]
+  );
+
+  const todo = result.rows[0];
+
+  res.json({
+    id: String(todo.id),
+    text: todo.text,
+    completed: todo.completed,
+  });
+});
+
 async function startServer() {
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {

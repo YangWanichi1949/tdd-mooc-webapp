@@ -20,7 +20,17 @@ test('can add and complete a todo', async ({ page }) => {
 
   await page.reload();
 
-  await expect(page.getByText(todoText).locator('..')).toHaveCSS(
+  await page.getByText(todoText).dblclick();
+
+  const editInput = page.locator('#edit-input');
+
+  await editInput.fill('Buy oat milk');
+
+  await editInput.press('Enter');
+
+  await expect(page.getByText('Buy oat milk')).toBeVisible();
+
+  await expect(page.getByText('Buy oat milk').locator('..')).toHaveCSS(
     'text-decoration-line',
     'line-through'
   );
