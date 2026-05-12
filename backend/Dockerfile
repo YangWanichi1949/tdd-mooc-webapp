@@ -1,4 +1,12 @@
-FROM nginx:1.20
+FROM node:20-alpine
 
-RUN mkdir /usr/share/nginx/html/api && \
-    echo "Hello from backend" > /usr/share/nginx/html/api/hello.html
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY src ./src
+
+EXPOSE 80
+
+CMD ["node", "src/server.js"]
